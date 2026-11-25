@@ -1,36 +1,42 @@
+<?php
+$oldJenis    = (string) old('jenis_karya');
+$oldKategori = (string) old('tipe_karya');
+?>
+
 <div class="mb-12 opacity-0 translate-y-4 transition-all duration-700 ease-out" data-anim data-delay="0">
     <h1 class="text-4xl font-extrabold text-indigo-950 tracking-tight leading-none mb-2">Ajukan Karya Baru</h1>
-    <p class="text-xs text-gray-500 max-w-2xl">Publikasikan karya terbaikmu di Galeri Spektra Polimedia dan jadilah bagian dari kurasi digital terpilih. Pastikan data yang dimasukkan akurat.</p>
+    <p class="text-xs text-gray-500 max-w-2xl">Publikasikan karya terbaikmu di Galeri Spektra Polimedia dan jadilah bagian dari kurasi digital maupun pameran ruang fisik terpilih.</p>
 </div>
 
 <form action="<?= base_url('dashboard/simpan-karya') ?>" method="POST" enctype="multipart/form-data" id="form-pengajuan" class="grid grid-cols-1 md:grid-cols-3 gap-8 opacity-0 translate-y-4 transition-all duration-700 ease-out" data-anim data-delay="150">
+    <?= csrf_field() ?>
 
     <div class="md:col-span-2 bg-white border border-gray-100 rounded-3xl p-8 shadow-sm flex flex-col justify-between">
         <div class="space-y-6">
 
             <div>
                 <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Judul Karya</label>
-                <input type="text" name="judul_karya" placeholder="Masukkan judul project Anda..." required
+                <input type="text" name="judul_karya" value="<?= esc(old('judul_karya')) ?>" minlength="3" maxlength="255" placeholder="Masukkan judul project Anda..." required
                     class="w-full px-4 py-3.5 text-xs bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-indigo-300 focus:ring-4 focus:ring-indigo-50 transition-all text-gray-800 placeholder-gray-400">
             </div>
 
             <div>
-                <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Deskripsi</label>
-                <textarea name="deskripsi" rows="5" placeholder="Ceritakan konsep dan proses di balik karya Anda..." required
-                    class="w-full px-4 py-3.5 text-xs bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-indigo-300 focus:ring-4 focus:ring-indigo-50 transition-all text-gray-800 placeholder-gray-400 resize-none"></textarea>
+                <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Deskripsi Konsep & Teknis</label>
+                <textarea name="deskripsi" rows="5" minlength="15" maxlength="5000" placeholder="Ceritakan konsep, pesan artistik, dan proses teknis di balik karya Anda (min. 15 karakter)..." required
+                    class="w-full px-4 py-3.5 text-xs bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:bg-white focus:border-indigo-300 focus:ring-4 focus:ring-indigo-50 transition-all text-gray-800 placeholder-gray-400 resize-none"><?= esc(old('deskripsi')) ?></textarea>
                 <span class="block text-[9px] text-gray-400 mt-1.5 font-medium">Pastikan deskripsi mencakup aspek teknis dan filosofis karya.</span>
             </div>
 
             <div>
                 <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Jenis Karya</label>
-                <div class="flex gap-6 p-4 bg-gray-50 border border-gray-100 rounded-xl">
+                <div class="flex flex-wrap gap-6 p-4 bg-gray-50 border border-gray-100 rounded-xl">
                     <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="jenis_karya" value="DIGITAL" onclick="handleRadioClick(this)" required class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer">
-                        <span class="ml-2 text-xs font-bold text-gray-700">Digital (Desain, UI/UX, Video, dll)</span>
+                        <input type="radio" name="jenis_karya" value="DIGITAL" <?= $oldJenis === 'DIGITAL' ? 'checked' : '' ?> onchange="aktifkanFormSpesifik(this.value)" required class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer">
+                        <span class="ml-2 text-xs font-bold text-gray-700">Digital (Desain, UI/UX, Video, Game, dll)</span>
                     </label>
                     <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="jenis_karya" value="FISIK" onclick="handleRadioClick(this)" required class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer">
-                        <span class="ml-2 text-xs font-bold text-gray-700">Fisik (Instalasi, Maket, Kanvas, dll)</span>
+                        <input type="radio" name="jenis_karya" value="FISIK" <?= $oldJenis === 'FISIK' ? 'checked' : '' ?> onchange="aktifkanFormSpesifik(this.value)" required class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 cursor-pointer">
+                        <span class="ml-2 text-xs font-bold text-gray-700">Fisik (Instalasi, Maket, Kanvas, Kriya, dll)</span>
                     </label>
                 </div>
             </div>
@@ -51,11 +57,11 @@
 
             <div id="form-tautan-digital" class="hidden space-y-4 bg-blue-50/50 p-6 rounded-2xl border border-blue-100 transition-all duration-300 mt-4">
                 <h4 class="text-[11px] font-extrabold text-blue-950 uppercase tracking-widest border-b border-blue-200 pb-2">Akses Berkas Karya Digital</h4>
-                <p class="text-xs text-gray-500 font-medium leading-relaxed">Untuk karya berupa Video, Animasi, UI/UX, atau Permainan (Game), unggah berkas utama Anda ke platform eksternal (YouTube, Google Drive, Itch.io, Figma) dan masukkan tautannya di bawah. <br><br><strong>Catatan:</strong> Kotak unggah *file* di sisi kanan tetap wajib diisi sebagai Poster / Cuplikan Layar (Thumbnail) untuk tampilan galeri.</p>
+                <p class="text-xs text-gray-500 font-medium leading-relaxed">Untuk karya digital (Video, Animasi, UI/UX, Game, atau Desain Resolusi Penuh), unggah berkas utama ke platform eksternal (YouTube, Google Drive, Itch.io, Figma) dan masukkan tautannya di bawah.<br><br><strong>Catatan:</strong> Kotak unggah berkas di sisi kanan tetap wajib diisi sebagai Poster / Cuplikan Layar (Thumbnail) galeri.</p>
 
                 <div class="mt-4">
-                    <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Tautan Eksternal (URL) Karya</label>
-                    <input type="url" name="tautan_karya" placeholder="Contoh: https://youtube.com/watch?v=..." class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-blue-300 transition-all text-gray-800 font-medium placeholder-gray-300">
+                    <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Tautan Eksternal (URL https://)</label>
+                    <input type="url" name="tautan_karya" value="<?= esc(old('tautan_karya')) ?>" placeholder="Contoh: https://www.figma.com/file/..." class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-blue-300 transition-all text-gray-800 font-medium placeholder-gray-300">
                 </div>
             </div>
 
@@ -65,26 +71,26 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Dimensi (P x L x T cm)</label>
-                        <input type="text" name="dimensi_karya" placeholder="Contoh: 120 x 80 x 50 cm" class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-300 transition-all text-gray-800 font-medium">
+                        <input type="text" name="dimensi_karya" value="<?= esc(old('dimensi_karya')) ?>" placeholder="Contoh: 120 x 80 x 50 cm" class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-300 transition-all text-gray-800 font-medium">
                     </div>
                     <div>
                         <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Material / Media</label>
-                        <input type="text" name="material_media" placeholder="Contoh: Kayu Jati, Cat Akrilik" class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-300 transition-all text-gray-800 font-medium">
+                        <input type="text" name="material_media" value="<?= esc(old('material_media')) ?>" placeholder="Contoh: Kayu Jati, Cat Akrilik" class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-300 transition-all text-gray-800 font-medium">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Kebutuhan Display Ruangan</label>
-                    <textarea name="kebutuhan_display" rows="3" placeholder="Contoh: Butuh meja 1x1 meter dan listrik 220V..." class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-300 transition-all text-gray-800 font-medium leading-relaxed resize-none"></textarea>
+                    <textarea name="kebutuhan_display" rows="3" placeholder="Contoh: Butuh pedestal 1x1 meter dan sumber listrik 220V..." class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-300 transition-all text-gray-800 font-medium leading-relaxed resize-none"><?= esc(old('kebutuhan_display')) ?></textarea>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-indigo-100">
                     <div>
                         <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Estimasi Total Anggaran (RAB)</label>
-                        <input type="text" name="estimasi_biaya" placeholder="Contoh: Rp 2.500.000" class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-300 transition-all text-gray-800 font-medium">
+                        <input type="text" name="estimasi_biaya" value="<?= esc(old('estimasi_biaya')) ?>" placeholder="Contoh: Rp 2.500.000" class="w-full px-4 py-3 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-300 transition-all text-gray-800 font-medium">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Unggah Berkas RAB (PDF/Excel)</label>
+                        <label class="block text-[10px] font-extrabold text-gray-700 tracking-wider uppercase mb-2">Unggah Berkas RAB (PDF/Excel, Maks 10MB)</label>
                         <input type="file" name="file_rab" accept=".pdf,.xls,.xlsx" class="w-full px-4 py-2 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-indigo-300 transition-all text-gray-800 font-medium file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100 cursor-pointer">
 
                         <div class="mt-2 flex items-center gap-2">
@@ -101,16 +107,16 @@
                 <label class="block text-[10px] font-extrabold text-indigo-950 uppercase tracking-wider mb-1">Persetujuan & Legalitas Pameran</label>
 
                 <label class="flex items-start cursor-pointer group">
-                    <input type="checkbox" required class="mt-0.5 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer">
+                    <input type="checkbox" name="pakta_integritas" value="1" required class="mt-0.5 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer">
                     <span class="ml-3 text-xs text-gray-600 font-medium leading-relaxed group-hover:text-gray-900 transition-colors">
-                        <strong class="text-indigo-950 font-bold">Pakta Integritas:</strong> Saya menyatakan bahwa karya ini merupakan karya asli ciptaan saya sendiri, tidak mengandung unsur plagiarisme, dan tidak melanggar Hak Kekayaan Intelektual (HKI) pihak manapun.
+                        <strong class="text-indigo-950 font-bold">Pakta Integritas:</strong> Saya menyatakan bahwa karya ini merupakan karya asli ciptaan saya sendiri, tidak mengandung unsur plagiarisme, dan tidak melanggar Hak Kekayaan Intelektual (HKI) pihak mana pun.
                     </span>
                 </label>
 
                 <label class="flex items-start cursor-pointer group">
-                    <input type="checkbox" required class="mt-0.5 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer">
+                    <input type="checkbox" name="izin_publikasi" value="1" required class="mt-0.5 w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer">
                     <span class="ml-3 text-xs text-gray-600 font-medium leading-relaxed group-hover:text-gray-900 transition-colors">
-                        <strong class="text-indigo-950 font-bold">Izin Publikasi Dokumentasi:</strong> Saya memberikan izin non-komersial kepada pengelola Galeri Spektra Polimedia untuk mendokumentasikan, mereproduksi visual, dan mempublikasikan karya ini dalam bentuk katalog pameran fisik maupun arsip digital publikasi institusi.
+                        <strong class="text-indigo-950 font-bold">Izin Publikasi Dokumentasi:</strong> Saya memberikan izin non-komersial kepada pengelola Galeri Spektra Polimedia untuk mendokumentasikan, mereproduksi visual, dan mempublikasikan karya ini dalam katalog pameran fisik maupun arsip digital institusi.
                     </span>
                 </label>
             </div>
@@ -134,9 +140,9 @@
                 </svg>
             </div>
             <p id="dropzone-text" class="text-xs font-bold text-gray-900 mb-1.5">Seret & Lepas Poster / Cuplikan Karya</p>
-            <p class="text-[10px] text-gray-400 max-w-xs leading-relaxed mb-6 px-4">Maksimum ukuran 5MB. Format: JPG, PNG.</p>
+            <p class="text-[10px] text-gray-400 max-w-xs leading-relaxed mb-6 px-4">Maksimum ukuran 5 MB. Format wajib: JPG, JPEG, atau PNG.</p>
 
-            <input type="file" name="file_karya" id="file-input" class="hidden" accept=".jpg,.jpeg,.png">
+            <input type="file" name="file_karya" id="file-input" class="hidden" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
             <button type="button" onclick="document.getElementById('file-input').click()" class="px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold rounded-xl tracking-tight transition shadow-sm cursor-pointer">
                 Pilih File Manual
             </button>
@@ -151,15 +157,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 01-2 2 2 2 0 01-2-2v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                         </svg>
                     </span>
-                    <h2 class="text-xs font-extrabold tracking-tight">Panduan Kurasi</h2>
+                    <h2 class="text-xs font-extrabold tracking-tight">Tips Lolos Kurasi</h2>
                 </div>
-                <p class="text-[10px] text-indigo-200 leading-relaxed">Pastikan resolusi karya minimal 300dpi untuk visual agar tampil maksimal di layar galeri utama dan tidak pecah.</p>
-                <a href="#" class="text-[10px] font-bold text-orange-400 hover:text-orange-300 flex items-center gap-1 mt-4 transition-colors w-fit">
-                    Lihat Standar Kurasi Lengkap
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
+                <p class="text-[11px] text-indigo-200 leading-relaxed">Gunakan poster rasio lanskap/persegi beresolusi tajam (min. lebar 1200px) dan jelaskan latar belakang riset kreatif Anda secara ringkas namun padat.</p>
             </div>
         </div>
 
@@ -168,64 +168,19 @@
 
 <script>
     const dataKategori = {
-        'DIGITAL': [
-            'Desain Grafis / Ilustrasi',
-            'UI/UX Design',
-            'Video / Film Pendek',
-            'Animasi 2D/3D',
-            'Pengembangan Game',
-            'Fotografi Digital',
-            'Karya Audio / Podcast'
-        ],
-        'FISIK': [
-            'Instalasi Seni Ruang',
-            'Maket / Prototipe Produk',
-            'Lukisan / Media Kanvas',
-            'Kriya / Kerajinan Tangan',
-            'Fotografi Cetak Terbingkai',
-            'Patung / 3D Art Manual',
-            'Media Cetak / Buku / Zine'
-        ]
+        DIGITAL: <?= json_encode($kategori_digital ?? [], JSON_UNESCAPED_UNICODE) ?>,
+        FISIK: <?= json_encode($kategori_fisik ?? [], JSON_UNESCAPED_UNICODE) ?>
     };
 
-    let pilihanJenisSaatIni = null;
+    const initialJenis = '<?= esc($oldJenis, 'js') ?>';
+    const initialKategori = '<?= esc($oldKategori, 'js') ?>';
 
-    function handleRadioClick(radioElement) {
-        if (pilihanJenisSaatIni === radioElement.value) {
-            radioElement.checked = false;
-            pilihanJenisSaatIni = null;
-            resetSeluruhForm();
-        } else {
-            pilihanJenisSaatIni = radioElement.value;
-            aktifkanFormSpesifik(pilihanJenisSaatIni);
-        }
-    }
-
-    function resetSeluruhForm() {
+    function aktifkanFormSpesifik(jenis, preselectedKategori = '') {
         const selectKategori = document.getElementById('kategori_dinamis');
         const formFisik = document.getElementById('form-proposal-fisik');
         const formDigital = document.getElementById('form-tautan-digital');
 
-        selectKategori.innerHTML = '<option value="" disabled selected hidden>Pilih Jenis Karya terlebih dahulu...</option>';
-        selectKategori.setAttribute('disabled', 'disabled');
-
-        formFisik.classList.add('hidden');
-        formDigital.classList.add('hidden');
-
-        [formFisik, formDigital].forEach(form => {
-            if (form) {
-                form.querySelectorAll('input, textarea').forEach(input => {
-                    input.removeAttribute('required');
-                    input.value = '';
-                });
-            }
-        });
-    }
-
-    function aktifkanFormSpesifik(jenis) {
-        const selectKategori = document.getElementById('kategori_dinamis');
-        const formFisik = document.getElementById('form-proposal-fisik');
-        const formDigital = document.getElementById('form-tautan-digital');
+        if (!dataKategori[jenis]) return;
 
         selectKategori.removeAttribute('disabled');
         selectKategori.innerHTML = '<option value="" disabled selected hidden>Pilih Kategori Spesifik...</option>';
@@ -234,6 +189,9 @@
             const option = document.createElement('option');
             option.value = kategori;
             option.textContent = kategori;
+            if (preselectedKategori && preselectedKategori === kategori) {
+                option.selected = true;
+            }
             selectKategori.appendChild(option);
         });
 
@@ -257,6 +215,9 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        if (initialJenis === 'DIGITAL' || initialJenis === 'FISIK') {
+            aktifkanFormSpesifik(initialJenis, initialKategori);
+        }
 
         setTimeout(() => {
             document.querySelectorAll('[data-anim]').forEach(el => {
@@ -272,13 +233,11 @@
         const dropzoneText = document.getElementById('dropzone-text');
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropzone.addEventListener(eventName, preventDefaults, false);
+            dropzone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
         });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
 
         ['dragenter', 'dragover'].forEach(eventName => {
             dropzone.addEventListener(eventName, () => {
@@ -293,29 +252,35 @@
         });
 
         dropzone.addEventListener('drop', (e) => {
-            let dt = e.dataTransfer;
-            let files = dt.files;
+            const files = e.dataTransfer.files;
             if (files.length > 0) {
                 fileInput.files = files;
-                updateDropzoneText(files[0].name);
+                updateDropzoneText(files[0]);
             }
         });
 
         fileInput.addEventListener('change', function() {
             if (this.files.length > 0) {
-                updateDropzoneText(this.files[0].name);
+                updateDropzoneText(this.files[0]);
             }
         });
 
-        function updateDropzoneText(filename) {
-            dropzoneText.textContent = "File Terpilih: " + filename;
+        function updateDropzoneText(file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran file poster melebihi batas maksimum 5 MB!');
+                fileInput.value = '';
+                dropzoneText.textContent = 'Seret & Lepas Poster / Cuplikan Karya';
+                dropzoneText.classList.remove('text-indigo-600');
+                return;
+            }
+            dropzoneText.textContent = 'File Terpilih: ' + file.name;
             dropzoneText.classList.add('text-indigo-600');
         }
 
         document.getElementById('form-pengajuan').addEventListener('submit', function(e) {
             if (fileInput.files.length === 0) {
                 e.preventDefault();
-                alert("Mohon unggah file Poster / Cuplikan Karya Anda terlebih dahulu pada area yang disediakan!");
+                alert('Mohon unggah file Poster / Cuplikan Karya Anda terlebih dahulu pada area yang disediakan!');
                 dropzone.classList.add('border-red-400', 'bg-red-50');
                 setTimeout(() => dropzone.classList.remove('border-red-400', 'bg-red-50'), 2000);
             }

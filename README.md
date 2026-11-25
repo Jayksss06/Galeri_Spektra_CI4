@@ -1,68 +1,96 @@
-# CodeIgniter 4 Application Starter
+# Galeri Spektra Polimedia — *The Digital Curator*
 
-## What is CodeIgniter?
+Platform web **Kurasi Digital & Manajemen Pameran Hibrida (Digital dan Fisik)** untuk mewadahi publikasi serta seleksi karya kreatif mahasiswa **Politeknik Negeri Media Kreatif (Polimedia)**.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+Dibangun menggunakan arsitektur **MVC CodeIgniter 4**, **MySQL (`InnoDB`)**, **Tailwind CSS**, dan **Vanilla JavaScript (ES6+)** dengan pendekatan **Hybrid Storage Architecture**.
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+---
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## Fitur Utama
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+### 1. Pengajuan Karya Dua Jalur (*Dual-Track Submission & Hybrid Storage*)
+- **Jalur Karya Digital:** Menyimpan poster/cuplikan visual teroptimasi di penyimpanan lokal server sembari menghubungkan berkas utama berkapasitas besar (video, animasi 3D, *game build*, prototipe Figma) melalui tautan *cloud* eksternal yang tervalidasi.
+- **Jalur Karya Fisik & Proposal Logistik Pameran:** Mengelola pengajuan instalasi ruang fisik di Gedung A Polimedia lengkap dengan spesifikasi dimensi (`P x L x T`), material/media, kebutuhan ruang pamer & daya listrik, estimasi anggaran, serta unggahan dokumen **Rencana Anggaran Biaya (RAB)** (`.pdf` / `.xlsx`) beserta templat acuan standar.
+- **Kepatuhan Akademik & HKI:** Validasi persetujuan Pakta Integritas orisinalitas karya dan izin publikasi dokumentasi non-komersial.
 
-## Installation & updates
+### 2. Alur Kurasi Multi-Peran (*Role-Based Curation Workflow*)
+- **Portal Mahasiswa (Kreator):** Dasbor analitik status pengajuan (*Total*, *Disetujui*, *Dalam Review*, *Ditolak*), pemantauan evaluasi/umpan balik kurator, pembatalan pengajuan berstatus `PENDING` (beserta pembersihan berkas otomatis), dan manajemen profil portofolio.
+- **Portal Kurator / Dosen Pengelola:** Antrean peninjauan karya lintas program studi, inspeksi dokumen RAB & tautan digital, persetujuan (`ACCEPTED`) atau penolakan (`REJECTED`) dengan kewajiban menyertakan umpan balik kuratorial, penambahan akun kurator internal, visualisasi grafik SVG distribusi pengajuan per program studi, serta ekspor laporan **CSV (`UTF-8 with BOM`)** yang langsung rapi dibuka di Microsoft Excel.
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+### 3. Katalog & Eksplorasi Publik Interaktif
+- *Landing page* responsif dengan animasi *scroll-reveal* berbasis `IntersectionObserver` dan *horizontal snap carousel*.
+- Halaman **Eksplorasi Karya (`/galeri`)** dengan pencarian multi-kolom (judul, deskripsi, kreator), pemfilteran sub-kategori *Digital* & *Fisik*, pengurutan waktu maupun popularitas kunjungan (*view counter* berbasis sesi), serta paginasi dinamis.
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+---
 
-## Setup
+## Aspek Keamanan Rekayasa (*Security Highlights*)
+- **Role-Based Access Control (RBAC):** Middleware terpusat (`AuthFilter`) yang memisahkan hak akses rute Mahasiswa dan Kurator/Admin, serta meniadakan registrasi admin publik.
+- **Autentikasi & Sesi Aman:** Enkripsi kata sandi `PASSWORD_BCRYPT`, regenerasi ID sesi saat autentikasi (`session()->regenerate()`), dan verifikasi sandi lama saat pembaruan kredensial.
+- **Perlindungan CSRF & HTTP Security Headers:** Token CSRF berbasis sesi pada seluruh formulir `POST` dan permintaan AJAX, metode `POST` untuk proses *logout*, serta header keamanan OWASP (`X-Frame-Options`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`).
+- **Validasi Unggahan & Sanitasi Output:** Validasi sisi server untuk tipe MIME, ekstensi, dan ukuran berkas; penonaktifan eksekusi skrip di direktori `public/uploads/.htaccess`; validasi skema URL ketat (`http`/`https`); *context-aware output escaping* (`esc(..., 'js')`); serta proteksi *CSV Formula Injection*.
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+---
 
-## Important Change with index.php
+## Teknologi yang Digunakan
+- **Backend:** PHP 8.1+, CodeIgniter 4.6
+- **Database:** MySQL / MariaDB (`InnoDB`, `utf8mb4_unicode_ci`, Foreign Key Constraints, Migrations & Seeders)
+- **Frontend:** HTML5, Tailwind CSS, Google Fonts (`Inter`), Vanilla JavaScript ES6+ (`IntersectionObserver`, HTML5 Drag-and-Drop API, Fetch API)
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+---
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+## Panduan Instalasi Lokal (XAMPP / PHP Built-in Server)
 
-**Please** read the user guide for a better explanation of how CI4 works!
+1. **Clone repositori & instal dependensi Composer**
+   ```bash
+   git clone <url-repositori-anda> galeri_spektra
+   cd galeri_spektra
+   composer install
+   ```
 
-## Repository Management
+2. **Konfigurasi file lingkungan (`.env`)**
+   ```bash
+   cp env .env
+   ```
+   Sesuaikan kredensial database (`database.default.*`) dan `app.baseURL` pada berkas `.env`. Buat database kosong bernama `galeri_spektra` di MySQL/phpMyAdmin.
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+3. **Jalankan Migrasi & Seeder Basis Data**
+   ```bash
+   php spark migrate
+   php spark db:seed DatabaseSeeder
+   ```
+   Perintah di atas otomatis membangun tabel `program_studi`, `mahasiswa`, `kurator`, dan `karya`, mengisi daftar Program Studi Polimedia, serta membuat akun Kurator awal apabila tabel kurator masih kosong:
+   - **Email Kurator Default:** `kurator@polimedia.ac.id`
+   - **Kata Sandi Default:** `SpektraPolimedia2026!` *(Segera ubah melalui menu Profil Akun setelah login pertama)*
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+4. **Jalankan Server Pengembangan**
+   - Melalui XAMPP Apache: Akses `http://localhost/galeri_spektra/public/`
+   - Atau melalui CLI CodeIgniter:
+     ```bash
+     php spark serve
+     ```
+     Lalu buka `http://localhost:8080` (sesuaikan `app.baseURL` di `.env` jika menggunakan `spark serve`).
 
-## Server Requirements
+---
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+## Struktur Direktori Inti
+```text
+galeri_spektra/
+├── app/
+│   ├── Common.php                 # Helper global (media_url & sanitasi CSV)
+│   ├── Config/                    # Konfigurasi Rute, Filter, Keamanan, & Aplikasi
+│   ├── Controllers/               # Auth, Beranda, Galeri, & Dashboard
+│   ├── Database/
+│   │   ├── Migrations/            # Skema terversi untuk 4 tabel relasional
+│   │   └── Seeds/                 # Seeder Program Studi & Kurator awal
+│   ├── Filters/AuthFilter.php     # Middleware autentikasi & otorisasi RBAC
+│   ├── Models/                    # KaryaModel, MahasiswaModel, KuratorModel, ProgramStudiModel
+│   └── Views/                     # Template antarmuka responsif (Publik, Mahasiswa, Kurator)
+└── public/
+    ├── assets/                    # Gambar statis & templat dokumen RAB (.xlsx)
+    └── uploads/                   # Penyimpanan lokal poster & dokumen RAB (terproteksi .htaccess)
+```
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+---
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
-
-Additionally, make sure that the following extensions are enabled in your PHP:
-
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+## Lisensi
+Proyek ini dikembangkan untuk tujuan akademik dan pengelolaan pameran kreatif di lingkungan **Politeknik Negeri Media Kreatif (Polimedia)**.

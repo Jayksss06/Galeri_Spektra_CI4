@@ -1,0 +1,17 @@
+#--------------------------------------------------------------------
+# Konfigurasi Lingkungan Contoh - Galeri Spektra Polimedia
+# Salin berkas ini menjadi `.env` dan sesuaikan dengan lingkungan lokal Anda.
+#--------------------------------------------------------------------
+
+CI_ENVIRONMENT = development
+
+app.baseURL = 'http://localhost/galeri_spektra/public/'
+app.appTimezone = 'Asia/Jakarta'
+
+database.default.hostname = localhost
+database.default.database = galeri_spektra
+database.default.username = root
+database.default.password = 
+database.default.DBDriver = MySQLi
+database.default.DBPrefix = 
+database.default.port     = 3306
